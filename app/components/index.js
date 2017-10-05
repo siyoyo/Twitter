@@ -21,9 +21,6 @@ import Pinned from './pinned'
 import Profile from './profile'
 import Chat from './chat'
 
-
-
-
 export default class Index extends Component {
   constructor(props){
     super(props)
@@ -120,9 +117,9 @@ export default class Index extends Component {
      <Navigator
      style={{flex: 1}}
      ref={'NAV'}
-     initialRoute={{id: 'home', name: 'home'}}
+     initialRoute={{id: 'login', name: 'login'}}
      renderScene={this.renderScene.bind(this)}/>
-        </View>
+    </View>
     )
 }
 }

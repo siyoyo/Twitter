@@ -9,15 +9,55 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  TextInput,
   Image,
+  Navigator,
   Dimensions,
   TouchableOpacity,
   View
 } from 'react-native';
 
+
+import * as firebase from "firebase";
+
+firebase.initializeApp({apiKey: "AIzaSyDLri7EnR54IB87XlDy3ZH13mUB7Fm5R7Y", authDomain: "task-shares.firebaseapp.com", databaseURL: "https://task-shares.firebaseio.com/", storageBucket: "gs://task-shares.appspot.com"});
+
+
+import Button from './widgets/button';
+
 var {height, width} = Dimensions.get('window');
 
 export default class Login extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      email: null,
+      password: null
+    }
+  }
+    
+ async twitterLogin() {
+
+    // executed in separated thread
+    const provider = firebase.auth.TwitterAuthProvider.credential('298627961-rv6owYcGlhS34zCThvvOtmBLxm2tSOI6awYc8E8E', 'xGTP9r6ExoGdImTAISvGV4VHwddqX8waNCdiEqG3i0n9n');
+    const navigator = this.props.navigator;
+    await firebase
+      .auth()
+      .signInWithCredential(provider)
+      .then(function (firebaseUser) {
+        alert("Successfully Login Using Firebase Authentication Service" + JSON.stringify(firebaseUser));
+
+        navigator.push({
+           id: 'home'
+       })
+      })
+      .catch(function (error) {
+        alert("Failed To Login " + error);
+      });
+  }
+
   render() {
     return (
       <Image style={styles.container} resizeMode="stretch" source={require('../images/party.jpg')}>
@@ -30,14 +70,25 @@ export default class Login extends Component {
       </View>
       <Image source={require('../images/icon.png')} resizeMode="contain" style={{height:50, width:110, margin:20, alignSelf:'center'}} />
       </View>
-      <TouchableOpacity style={{flex:1, backgroundColor:'rgba(0,0,0,0)', alignItems:'center', padding:10}}>
-      <Text style={{color:'#e7e7e7', fontSize:17}}>
-      Already Have An Account?
-      </Text>
-      <Text style={{color:'#8dd7ff', fontSize:18}}>
-      Sign In
-      </Text>
-      </TouchableOpacity>
+      <View alignItems="center">
+       <TextInput
+        style={styles.textinput}
+        onChangeText={(text) => this.setState({email: text})}
+        value={this.state.email}
+        placeholder={"Email Address"}
+        placeholderTextColor="white"/>
+       <TextInput
+        style={styles.textinput}
+        onChangeText={(text) => this.setState({password: text})}
+        value={this.state.password}
+        secureTextEntry={true}
+        placeholder={"Password"}
+        placeholderTextColor="white"/>
+       </View> 
+       <Button
+        text = "login"
+        onpress={this.twitterLogin.bind(this)}
+        button_styles={styles.primary_button}/>
       </Image>
     );
   }
@@ -48,7 +99,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height:null,
     width:null,
-
     backgroundColor: '#F5FCFF',
   },
   circle:{
@@ -58,7 +108,6 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'center',
     borderRadius:30,
-
   },
   welcome: {
     fontSize: 20,
@@ -70,5 +119,19 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  primary_button: {
+    margin: 10,
+    padding: 15,
+    alignItems:'center',
+    backgroundColor: 'rgba(85,172,239,0.3)'
+  },  
+  textinput: {
+    margin: 10,
+    height: 40, 
+    width: 300,
+    color : 'white',
+    backgroundColor: 'rgba(85,172,239,0.2)',
+    borderWidth: 1
+  }
 });
 
