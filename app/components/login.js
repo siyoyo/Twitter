@@ -21,7 +21,14 @@ import {
 
 import * as firebase from "firebase";
 
-firebase.initializeApp({apiKey: "AIzaSyDLri7EnR54IB87XlDy3ZH13mUB7Fm5R7Y", authDomain: "task-shares.firebaseapp.com", databaseURL: "https://task-shares.firebaseio.com/", storageBucket: "gs://task-shares.appspot.com"});
+var firebaseConfig = {
+  apiKey: "AIzaSyDLri7EnR54IB87XlDy3ZH13mUB7Fm5R7Y",
+  authDomain: "task-shares.firebaseapp.com",
+  databaseURL: "https://task-shares.firebaseio.com/",
+  storageBucket: "gs://task-shares.appspot.com"
+}
+
+firebase.initializeApp(firebaseConfig);
 
 // set it as global variable and call it at another windows
 global.firebase = firebase;
