@@ -4,7 +4,9 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import {twitter} from 'react-native-simple-auth';
+import Spinner from 'react-native-loading-spinner-overlay';
 import {
   AppRegistry,
   StyleSheet,
@@ -17,11 +19,12 @@ import {
   View
 } from 'react-native';
 
-
 import * as firebase from "firebase";
 
 firebase.initializeApp({apiKey: "AIzaSyDLri7EnR54IB87XlDy3ZH13mUB7Fm5R7Y", authDomain: "task-shares.firebaseapp.com", databaseURL: "https://task-shares.firebaseio.com/", storageBucket: "gs://task-shares.appspot.com"});
 
+// set it as global variable and call it at another windows
+global.firebase = firebase;
 
 import Button from './widgets/button';
 
@@ -34,104 +37,190 @@ export default class Login extends Component {
 
     this.state = {
       email: null,
-      password: null
+      password: null,
+      loading: false
     }
   }
-    
- async twitterLogin() {
 
-    // executed in separated thread
-    const provider = firebase.auth.TwitterAuthProvider.credential('298627961-rv6owYcGlhS34zCThvvOtmBLxm2tSOI6awYc8E8E', 'xGTP9r6ExoGdImTAISvGV4VHwddqX8waNCdiEqG3i0n9n');
+  async firebaseLogin()
+  {
+    var state = this.state;
+    const navigator = this.props.navigator;
+    if (this.state.email != null && this.state.password != null) {
+      state.loading = true;
+      await firebase
+        .auth()
+        .signInWithEmailAndPassword(this.state.email, this.state.password)
+        .then(function (firebaseUser) {   
+          state.loading = false;
+          navigator.push({id: 'home'})
+        })
+        .catch(function (error) {
+          state.loading = false;
+          alert("Failed To Login");
+        });
+    } else {
+      alert("Please fill username and password");
+    }
+  }
+
+  render() {
+    return (
+      <Image
+        style={styles.container}
+        resizeMode="stretch"
+        source={require('../images/party.jpg')}>
+        <Spinner
+          visible={this.state.loading}
+          textContent={"Try to login..."}
+          textStyle={{
+          color: '#FFF'
+        }}/>
+        <View
+          style={{
+          flex: 8,
+          alignItems: 'flex-end',
+          justifyContent: 'center'
+        }}>
+          <Image
+            source={require('../images/icon.png')}
+            resizeMode="contain"
+            style={{
+            height: 50,
+            width: 110,
+            margin: 20,
+            alignSelf: 'center'
+          }}/>
+        </View>
+        <View alignItems="center">
+          <TextInput
+            style={styles.textinput}
+            onChangeText={(text) => this.setState({email: text})}
+            value={this.state.email}
+            placeholder={"Email Address"}
+            placeholderTextColor="white"/>
+          <TextInput
+            style={styles.textinput}
+            onChangeText={(text) => this.setState({password: text})}
+            value={this.state.password}
+            secureTextEntry={true}
+            placeholder={"Password"}
+            placeholderTextColor="white"/>
+        </View>
+        <View
+          style={{
+          alignSelf: 'center',
+          width: ((width / 2) + 40),
+          padding: 5,
+          paddingLeft: 50,
+          borderTopLeftRadius: 40,
+          borderBottomLeftRadius: 40,
+          flexDirection: 'row',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          alignItems: 'center'
+        }}>
+          <TouchableOpacity
+            style={styles.circle}
+            onPress={this
+            .firebaseLogin
+            .bind(this)}>
+            <Image
+              source={require('../images/bird.png')}
+              resizeMode="contain"
+              style={{
+              height: 30,
+              width: 30
+            }}/>
+          </TouchableOpacity>
+          <Text
+            style={{
+            color: '#fff',
+            fontSize: 19,
+            margin: 12
+          }}>Login</Text>
+        </View>
+      </Image>
+    );
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  twitterLoginDoesntWork()
+  {
+    var twitterDat = {
+      appId: 'UNBnxyw1qlrwwmLSzbYsp30jV',
+      appSecret: 'sltYCauxb7yRNU8cUXMXkaKp9pRA6lWNVMifpxueXhBtBruipz',
+      callback: 'testapp://authorize'
+    }
+
+    twitter({appId: twitterDat.appId, appSecret: twitterDat.appSecret, callback: twitterDat.callback}).then((info) => {
+      // info.user - user details from the provider info.credentials - tokens from the
+      // provider
+      alert('Succeed ' + JSON.stringify(info));
+    }).catch((error) => {
+      // error.code error.description
+      alert('Error ' + JSON.stringify(error));
+    });
+  }
+
+  async twitterLoginDangerousWay() {
+    //executed in separated thread
+    const provider = firebase
+      .auth
+      .TwitterAuthProvider
+      .credential('298627961-rv6owYcGlhS34zCThvvOtmBLxm2tSOI6awYc8E8E', 'xGTP9r6ExoGdImTAISvGV4VHwddqX8waNCdiEqG3i0n9n');
+
     const navigator = this.props.navigator;
     await firebase
       .auth()
       .signInWithCredential(provider)
       .then(function (firebaseUser) {
         alert("Successfully Login Using Firebase Authentication Service" + JSON.stringify(firebaseUser));
-
-        navigator.push({
-           id: 'home'
-       })
+        navigator.push({id: 'home'})
       })
       .catch(function (error) {
         alert("Failed To Login " + error);
       });
   }
-
-  render() {
-    return (
-      <Image style={styles.container} resizeMode="stretch" source={require('../images/party.jpg')}>
-      <View style={{flex:8, alignItems:'flex-end', justifyContent:'center'}}>
-      <View style={{width:((width/2) + 40), padding:5, borderTopLeftRadius:40, borderBottomLeftRadius:40, flexDirection:'row', backgroundColor:'rgba(0,0,0,0.5)', alignItems:'center'}}>
-      <TouchableOpacity style={styles.circle}>
-      <Image source={require('../images/bird.png')} resizeMode="contain" style={{height:30, width:30}} />
-      </TouchableOpacity>
-      <Text style={{color:'#fff', fontSize:19, margin:12}}>Get Started</Text>
-      </View>
-      <Image source={require('../images/icon.png')} resizeMode="contain" style={{height:50, width:110, margin:20, alignSelf:'center'}} />
-      </View>
-      <View alignItems="center">
-       <TextInput
-        style={styles.textinput}
-        onChangeText={(text) => this.setState({email: text})}
-        value={this.state.email}
-        placeholder={"Email Address"}
-        placeholderTextColor="white"/>
-       <TextInput
-        style={styles.textinput}
-        onChangeText={(text) => this.setState({password: text})}
-        value={this.state.password}
-        secureTextEntry={true}
-        placeholder={"Password"}
-        placeholderTextColor="white"/>
-       </View> 
-       <Button
-        text = "login"
-        onpress={this.twitterLogin.bind(this)}
-        button_styles={styles.primary_button}/>
-      </Image>
-    );
-  }
+   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height:null,
-    width:null,
-    backgroundColor: '#F5FCFF',
+    height: null,
+    width: null,
+    backgroundColor: '#F5FCFF'
   },
-  circle:{
-    backgroundColor:'rgba(85,172,239,0.2)',
-    height:60,
-    width:60,
-    alignItems:'center',
-    justifyContent:'center',
-    borderRadius:30,
+  circle: {
+    backgroundColor: 'rgba(85,172,239,0.2)',
+    height: 60,
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    margin: 10
   },
   instructions: {
     textAlign: 'center',
     color: '#333333',
-    marginBottom: 5,
+    marginBottom: 5
   },
   primary_button: {
     margin: 10,
     padding: 15,
-    alignItems:'center',
+    alignItems: 'center',
     backgroundColor: 'rgba(85,172,239,0.3)'
-  },  
+  },
   textinput: {
     margin: 10,
-    height: 40, 
+    height: 40,
     width: 300,
-    color : 'white',
+    color: 'white',
     backgroundColor: 'rgba(85,172,239,0.2)',
     borderWidth: 1
   }
 });
-

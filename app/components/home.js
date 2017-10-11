@@ -32,6 +32,7 @@ var image9 = require('../images/image3.jpeg')
 var image10 = require('../images/image2.jpeg')
 var image11 = require('../images/image1.jpeg')
 
+// TODO REPLACE THIS FROM TWITTER 
 var data = [{
   "id": 1,
   "first_name": "Gina",
