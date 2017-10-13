@@ -32,6 +32,7 @@ firebase.initializeApp(firebaseConfig);
 
 // set it as global variable and call it at another windows
 global.firebase = firebase;
+global.firebaseDatabase = firebase.database();
 
 import Button from './widgets/button';
 
