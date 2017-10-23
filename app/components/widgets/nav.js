@@ -19,29 +19,11 @@ import Iconz from 'react-native-vector-icons/Ionicons';
 export default class Nav extends Component {
   render() {
     return (
-      <View style={{height:50, backgroundColor:'#01addf', justifyContent:'space-around', alignItems:'center', flexDirection:'row'}}>
+      <View style={{height:50, backgroundColor:'#01addf', justifyContent:'flex-start', flexDirection:'row'}}>
       <TouchableOpacity onPress ={() => this.props.navigator.replace({id:'home'})} style={styles.row}>
       <Icon name = "home" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
       <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
       HOME
-      </Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
-      <Iconz name = "ios-at-outline" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
-      <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
-      CONNECT
-      </Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress ={() => this.props.navigator.replace({id:'discover'})} style={styles.row}>
-      <Icon name = "search" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
-      <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
-      DISCOVER
-      </Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.row}>
-      <Icon name = "person" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
-      <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
-      ME
       </Text>
       </TouchableOpacity>
       </View>
@@ -49,6 +31,25 @@ export default class Nav extends Component {
   }
 }
 
+      // <TouchableOpacity style={styles.row}>
+      // <Iconz name = "ios-at-outline" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
+      // <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
+      // CONNECT
+      // </Text>
+      // </TouchableOpacity>
+      // <TouchableOpacity onPress ={() => this.props.navigator.replace({id:'discover'})} style={styles.row}>
+      // <Icon name = "search" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
+      // <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
+      // DISCOVER
+      // </Text>
+      // </TouchableOpacity>
+      // <TouchableOpacity style={styles.row}>
+      // <Icon name = "person" size={20} style={{margin:5, fontWeight:"600"}} color="#fff" />
+      // <Text style={{color:'#fff', fontSize:12, fontWeight:'800'}}>
+      // ME
+      // </Text>
+      // </TouchableOpacity>
+      
 const styles = StyleSheet.create({
   container: {
     flex: 1,

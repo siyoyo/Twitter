@@ -5,6 +5,8 @@
  */
 
 import React, { Component } from 'react';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 import {
   AppRegistry,
   StyleSheet,
@@ -20,17 +22,17 @@ import Nav from './widgets/nav'
 import SndNav from './widgets/sndNav' 
 
 var {height, width} = Dimensions.get('window');
-var image1 = require('../images/image11.jpeg')
-var image2 = require('../images/image10.jpeg')
-var image3 = require('../images/image9.jpeg')
-var image4 = require('../images/image8.jpeg')
-var image5 = require('../images/image7.jpeg')
-var image6 = require('../images/image6.jpeg')
-var image7 = require('../images/image5.jpeg')
-var image8 = require('../images/image4.jpeg')
-var image9 = require('../images/image3.jpeg')
-var image10 = require('../images/image2.jpeg')
-var image11 = require('../images/image1.jpeg')
+var image1 = require('../images/tasks.png')
+var image2 = require('../images/tasks.png')
+var image3 = require('../images/tasks.png')
+var image4 = require('../images/tasks.png')
+var image5 = require('../images/tasks.png')
+var image6 = require('../images/tasks.png')
+var image7 = require('../images/tasks.png')
+var image8 = require('../images/tasks.png')
+var image9 = require('../images/tasks.png')
+var image10 = require('../images/tasks.png')
+var image11 = require('../images/tasks.png')
 
 // TODO REPLACE THIS FROM TWITTER 
 var data = [{
@@ -104,18 +106,65 @@ var data = [{
   "time": "11:22 AM",
   image: image10
 }];
+
 var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+var isLoading = true; 
+
+function loadFirebaseData()
+{
+  isLoading = true;
+  var firebaseDatabase = global.firebase.database();
+  var firebaseData = firebaseDatabase.ref("tasks/");
+  
+  var arrayOfData = [];
+  firebaseData.on('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+         //alert('At here');
+         arrayOfData.push(childSnapshot);
+      });
+
+      alert(JSON.stringify(arrayOfData));
+      
+      // after done 
+      var data = [{
+          "id": 10,
+          "first_name": "Bri",
+          "last_name": "Franklin",
+          "tweet": "Nullanisi vulputate nonummy. Maecenas tincidunt lacusvelit. Vivamus rus.",
+          "time": "11:22 AM",
+          image: image10
+      }] 
+  });
+  
+  //this.dataSource =  ds.cloneWithRows(firebaseData)
+  isLoading = false;
+}
+
+var currenState = null;
+
 export default class Discover extends Component {
+
   constructor(props){
     super(props)
     this.state = {
       dataSource: ds.cloneWithRows(data),
+      loading: false
     }
+    
+    this.state.loading = true; 
+    loadFirebaseData();
   }
-
+  
   eachTweet(x){
     return(
       <TouchableOpacity style={{width:width, height:90, borderBottomWidth:1, borderColor:'#e3e3e3'}}>
+      <Spinner
+      visible={ isLoading }
+      textContent={"Try to retrieve data from firebase..."}
+      textStyle={{
+      color: '#FFF'
+      }}/>
       <View style={{flex:1, flexDirection:'row', alignItems:'center'}}>
       <Image source = {x.image} resizeMode="contain" style ={{height:54, width:54, borderRadius:27, margin:10}} />
       <View style={{flex:1}}>
@@ -135,7 +184,7 @@ export default class Discover extends Component {
     return (
       <View style={styles.container}>
       <Nav {...this.props} />
-      <SndNav {...this.props} />
+      
       <View style={{flexDirection:'row', alignItems:'flex-end', padding:10, borderBottomWidth:1, borderColor:'#e7e7e7'}}>
       <Text style={{fontWeight:'900', fontSize:20, color:'#333', marginBottom:-1 }}>TWEETS</Text>
       <TouchableOpacity><Text style={{fontSize:14, color:'#01addf', fontWeight:'400', marginLeft:10}}>ALL</Text></TouchableOpacity>
@@ -160,3 +209,4 @@ const styles = StyleSheet.create({
 }}
 );
 
+// <SndNav {...this.props} />
