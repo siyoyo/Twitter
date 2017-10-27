@@ -53,23 +53,32 @@ export default class Login extends Component {
   async firebaseLogin()
   {
     var state = this.state;
-    const navigator = this.props.navigator;
+
+    state.loading = true;
+    parent = this;
     if (this.state.email != null && this.state.password != null) {
-      state.loading = true;
+      // convert to lower case and eliminate space
+      this.state.email = this.state.email.toLowerCase().trim();
       await firebase
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then(function (firebaseUser) {   
-          state.loading = false;
-          navigator.push({id: 'home'})
+        .then(function (firebaseUser) {
+           parent.goToLogin(parent) 
         })
         .catch(function (error) {
-          state.loading = false;
-          alert("Failed To Login");
+          alert(error.message)
         });
     } else {
       alert("Please fill username and password");
     }
+
+    state.loading = false;
+  }
+
+  goToLogin(theParent) 
+  {
+    theParent.state.loading = false;
+    theParent.props.navigator.push({id: 'home'})
   }
 
   render() {
@@ -87,7 +96,6 @@ export default class Login extends Component {
         <View
           style={{
           flex: 8,
-          alignItems: 'flex-end',
           justifyContent: 'center'
         }}>
           <Image
@@ -100,7 +108,13 @@ export default class Login extends Component {
             alignSelf: 'center'
           }}/>
         </View>
-        <View alignItems="center">
+        <View style={{
+          flex: 8,
+          alignItems: 'center',
+          alignSelf : 'center',
+          flexDirection : 'column',
+          justifyContent: 'center'
+        }}>
           <TextInput
             style={styles.textinput}
             onChangeText={(text) => this.setState({email: text})}
@@ -227,6 +241,7 @@ const styles = StyleSheet.create({
     margin: 10,
     height: 40,
     width: 300,
+    paddingLeft : 20,
     color: 'white',
     backgroundColor: 'rgba(85,172,239,0.2)',
     borderWidth: 1
