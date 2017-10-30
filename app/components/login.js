@@ -31,12 +31,15 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // set it as global variable and call it at another windows
+// since firebase is static we can then pass it easyly into global 
 global.firebase = firebase;
 global.firebaseDatabase = firebase.database();
 
 import Button from './widgets/button';
 
 var {height, width} = Dimensions.get('window');
+
+var firebaseUserGlobal = null;
 
 export default class Login extends Component {
 
@@ -63,6 +66,7 @@ export default class Login extends Component {
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
         .then(function (firebaseUser) {
+           firebaseUserGlobal = firebaseUser;
            parent.goToLogin(parent) 
         })
         .catch(function (error) {
@@ -78,7 +82,8 @@ export default class Login extends Component {
   goToLogin(theParent) 
   {
     theParent.state.loading = false;
-    theParent.props.navigator.push({id: 'home'})
+    this.setState( { firebaseUser : global.firebaseUser  } );
+    theParent.props.navigator.push({id: 'home', props : { firebaseUser :  firebaseUserGlobal } })
   }
 
   render() {

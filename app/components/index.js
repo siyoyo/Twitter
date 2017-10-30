@@ -75,7 +75,7 @@ export default class Index extends Component {
      if (routeId === 'home') {
       return (
         <Home
-        {...this.props} 
+        {...route.props} 
         navigator={navigator} />
         );
     }
