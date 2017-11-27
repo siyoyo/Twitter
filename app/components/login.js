@@ -40,6 +40,7 @@ import Button from './widgets/button';
 var {height, width} = Dimensions.get('window');
 
 var firebaseUserGlobal = null;
+var retrievedData = [];
 
 export default class Login extends Component {
 
@@ -67,11 +68,24 @@ export default class Login extends Component {
         .signInWithEmailAndPassword(this.state.email, this.state.password)
         .then(function (firebaseUser) {
            firebaseUserGlobal = firebaseUser;
-           parent.goToLogin(parent) 
+        //   alert(firebaseUser.uid)      
         })
         .catch(function (error) {
-          alert(error.message)
-        });
+       //   alert(error.message)
+     });
+
+     firebaseData = global.firebaseDatabase.ref('tasks/' + firebaseUserGlobal.uid); 
+        
+     var parent = this; 
+     await firebaseData.on('value', function(snapshot) {
+          snapshot.forEach(function(childSnapshot) {
+      //    alert(JSON.stringify(childSnapshot))
+          retrievedData.push(childSnapshot);
+         });
+
+       //  alert(JSON.stringify(retrievedData))
+         parent.goToLogin(parent)   
+       });  
     } else {
       alert("Please fill username and password");
     }
@@ -83,7 +97,7 @@ export default class Login extends Component {
   {
     theParent.state.loading = false;
     this.setState( { firebaseUser : global.firebaseUser  } );
-    theParent.props.navigator.push({id: 'home', props : { firebaseUser :  firebaseUserGlobal } })
+    theParent.props.navigator.push({id: 'home', props : { firebaseUser :  firebaseUserGlobal, firebaseData : retrievedData } })
   }
 
   render() {
@@ -142,6 +156,7 @@ export default class Login extends Component {
           paddingLeft: 50,
           borderTopLeftRadius: 40,
           borderBottomLeftRadius: 40,
+          marginBottom : 20,
           flexDirection: 'row',
           backgroundColor: 'rgba(0,0,0,0.5)',
           alignItems: 'center'

@@ -27,24 +27,31 @@ var taskImage = require('../images/tasks.png')
 var data = [];
 var user = null;
 
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+var firebaseData = null; 
 export default class Discover extends Component {
 
   constructor(props){
     super(props)
+
+    alert(JSON.stringify(props.firebaseData))
+
+    firebaseData = props.firebaseData;
  
+    this.eachTweet.bind(this);
     // must be declared
     this.state = {
-      loading: true, 
-      loaded : false
+      loaded: true,
+      dataSource: ds.cloneWithRows(JSON.parse(JSON.stringify(props.firebaseData)))
     }
   }
 
-  componentWillMount() 
-  {
-    user = this.props.firebaseUser;
-    this.writeUserData(user.uid, user.email, 'Clean rest room', '30/10/2017', '08:00', taskImage);
-    this.loadFirebaseData();
-  }
+  // componentWillMount() 
+  // {
+  //   user = this.props.firebaseUser;
+  //   this.writeUserData(user.uid, user.email, 'Clean rest room', '30/10/2017', '08:00', taskImage);
+  //   this.loadFirebaseData();
+  // }
    
   // Causing error on render
   // componentDidMount() 
@@ -66,45 +73,46 @@ export default class Discover extends Component {
     });
   }
 
-  loadFirebaseData()
-  {
-    this.state.loading = true;
-    var firebaseDatabase = global.firebase.database();
-    var firebaseData = firebaseDatabase.ref('tasks/' + user.uid);
+  // loadFirebaseData()
+  // {
+  //   this.state.loading = true;
+  //   var firebaseDatabase = global.firebase.database();
+  //   var firebaseData = firebaseDatabase.ref('tasks/' + user.uid);
     
-    var parent = this; 
+  //   var parent = this; 
 
-    firebaseData.on('value', function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-        data.push(childSnapshot);
-      });
+  //   firebaseData.on('value', function(snapshot) {
+  //       snapshot.forEach(function(childSnapshot) {
+  //       data.push(childSnapshot);
+  //     });
 
-      var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-      parent.state = {
-        dataSource: ds.cloneWithRows(data),
-        loading: false, 
-        loaded : true
-      }
-      //NEED TO FORCE UPDATE THE UI >> STUPID! 
-      parent.forceUpdate();    
-    });
-  }
+  //     var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+  //     parent.state = {
+  //       dataSource: ds.cloneWithRows(data),
+  //       loading: false, 
+  //       loaded : true
+  //     }
+  //     //NEED TO FORCE UPDATE THE UI >> STUPID! 
+  //     parent.forceUpdate();    
+  //   });
+  // }
   
   eachTweet(x){
+    var yoyok = x.email
     return(
       <TouchableOpacity style={{width:width, height:90, borderBottomWidth:1, borderColor:'#e3e3e3'}}>
-        <View style={{flex:1, flexDirection:'column', alignItems:'center'}}>
+        <View style={{flex:1, flexDirection:'column'}}>
            <Image source = {x.image} resizeMode="contain" style ={{height:54, width:54, borderRadius:27, margin:10}} />
+        </View>
          <View style={{flex:1}}>
            <View style={{ flexDirection:'column', marginLeft:5, marginTop:5, alignItems:'center'}}>
-               <Text style={{fontWeight:'600', fontSize:12}}>Assigned To: {x.email}</Text>
+               <Text style={{fontWeight:'600', fontSize:12}}>Assigned To: {yoyok }</Text>
                <Text style={{fontWeight:'500', fontSize:12}}>Description: {x.description}</Text>
            </View>
            <View style={{ margin:5, marginRight:10,}}>
               <Text style={{fontSize:13, color:'#444', fontWeight:'400'}}>When: {x.date} - { x.time }</Text>
            </View>
          </View>
-        </View>
       </TouchableOpacity>
     )
   }
@@ -140,8 +148,8 @@ export default class Discover extends Component {
         </TouchableOpacity>
       </View>
       <ListView 
-        dataSource = {this.state.dataSource}
         renderRow = {(rowData) => this.eachTweet(rowData)}
+        dataSource = {this.state.dataSource}
       />
       </View>
     );
